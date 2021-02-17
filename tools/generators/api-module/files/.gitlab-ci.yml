@@ -1,0 +1,46 @@
+# <%= dasherize(libName) %> API
+####################
+<%= dasherize(libName) %>-api-build:
+  stage: "build"
+  only:
+    changes:
+      - "apps/<%= dasherize(libName) %>/**/*"
+      - "libs/**/*"
+      - ".gitlab-ci.yml"
+  needs:
+    - job: environment
+      artifacts: true
+  tags:
+      - shell
+  variables:
+    DOCKERFILE_PATH: <%= path %>/<%= dasherize(libName) %>/Dockerfile
+    TAG: <%= dasherize(libName) %>-api-$IMAGE_VERSION
+  script:
+    - docker build -f "$DOCKERFILE_PATH" -t "$DOCKER_HUB:$TAG" .
+
+
+<%= dasherize(libName) %>-api-deploy:
+  stage: "deploy"
+  only:
+    changes:
+      - "apps/<%= dasherize(libName) %>/**/*"
+      - "libs/**/*"
+      - ".gitlab-ci.yml"
+  needs:
+    - "<%= dasherize(libName) %>-api-build"
+    - job: environment
+      artifacts: true
+  tags:
+    - shell
+  variables:
+    HTTP_PORT_IN: <%= innerPort %>
+    HTTP_PORT_HOST: <%= innerPort %>
+    CONTAINER_NAME: <%= dasherize(libName) %>
+    TAG: <%= dasherize(libName) %>-$IMAGE_VERSION
+  script:
+    - docker stop "$CONTAINER_NAME" || true
+    - docker run -d --rm
+      --name "$CONTAINER_NAME"
+      -p $HTTP_PORT_HOST:$HTTP_PORT_IN
+      "$DOCKER_HUB:$TAG"
+    - docker logs "$$CONTAINER_NAME"

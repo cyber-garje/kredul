@@ -1,0 +1,47 @@
+# Kredul APP UI
+####################
+kredul-ui-build:
+  stage: "build"
+  only:
+    changes:
+      - "apps/kredul/**/*"
+      - "server/**/*"
+      - "libs/**/*"
+      - ".gitlab-ci.yml"
+  needs:
+    - job: environment
+      artifacts: true
+  tags:
+    - shell
+  variables:
+    DOCKERFILE_PATH: apps/kredul/Dockerfile
+    TAG: kredul-ui-$IMAGE_VERSION
+  script:
+    - docker build -f "$DOCKERFILE_PATH" -t "$DOCKER_HUB:$TAG" .
+
+kredul-ui-deploy:
+  stage: "deploy"
+  only:
+    changes:
+      - "apps/kredul/**/*"
+      - "server/**/*"
+      - "libs/**/*"
+      - ".gitlab-ci.yml"
+  needs:
+    - "kredul-ui-build"
+    - job: environment
+      artifacts: true
+  tags:
+    - shell
+  variables:
+    HTTP_PORT_IN: 4200
+    HTTP_PORT_HOST: 4200
+    CONTAINER_NAME: kredul-ui
+    TAG: kredul-ui-$IMAGE_VERSION
+  script:
+    - docker stop "$CONTAINER_NAME" || true
+    - docker run -d --rm
+      --name "$CONTAINER_NAME"
+      -p $HTTP_PORT_HOST:$HTTP_PORT_IN
+      $DOCKER_HUB:$TAG
+    - docker logs "$CONTAINER_NAME"

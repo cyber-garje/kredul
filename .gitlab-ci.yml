@@ -1,0 +1,15 @@
+environment:
+  stage: '.pre'
+  tags:
+    - shell
+  script:
+    - source .gitlab-ci.env
+    - echo "IMAGE_VERSION=$IMAGE_VERSION" > properties.env
+  artifacts:
+    reports:
+      dotenv: properties.env
+
+include:
+  - '/apps/kredul/.gitlab-ci.yml'
+  - '/apps/authentication/.gitlab-ci.yml'
+

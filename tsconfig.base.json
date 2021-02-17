@@ -1,0 +1,27 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "rootDir": ".",
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "es2015",
+    "module": "esnext",
+    "typeRoots": ["node_modules/@types"],
+    "lib": ["es2017", "dom"],
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@kredul/api-interfaces": ["libs/api-interfaces/src/index.ts"],
+      "@kredul/core": ["libs/core/src/lib/core.module.ts", "libs/core/src/lib/index.ts"],
+      "@kredul/generator": ["tools/generators"],
+      "@kredul/mongoose": ["libs/mongoose/src/index.ts"]
+    }
+  },
+  "include": ["libs/**/*", "libs/**/*.json", "libs/**/src/**"],
+  "exclude": ["node_modules", "tmp", "**/files/**"]
+}

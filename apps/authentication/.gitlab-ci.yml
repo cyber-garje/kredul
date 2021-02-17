@@ -1,0 +1,46 @@
+# Authentication API
+####################
+authentication-api-build:
+  stage: "build"
+  only:
+    changes:
+      - "apps/authentication/**/*"
+      - "libs/**/*"
+      - ".gitlab-ci.yml"
+  needs:
+    - job: environment
+      artifacts: true
+  tags:
+    - shell
+  variables:
+    DOCKERFILE_PATH: apps/authentication/Dockerfile
+    TAG: authentication-api-$IMAGE_VERSION
+  script:
+    - docker build -f "$DOCKERFILE_PATH" -t "$DOCKER_HUB:$TAG" .
+
+
+authentication-api-deploy:
+  stage: "deploy"
+  only:
+    changes:
+      - "apps/authentication/**/*"
+      - "libs/**/*"
+      - ".gitlab-ci.yml"
+  needs:
+    - "authentication-api-build"
+    - job: environment
+      artifacts: true
+  tags:
+    - shell
+  variables:
+    HTTP_PORT_IN: 3001
+    HTTP_PORT_HOST: 3001
+    CONTAINER_NAME: authentication-api
+    TAG: authentication-api-$IMAGE_VERSION
+  script:
+    - docker stop "$CONTAINER_NAME" || true
+    - docker run -d --rm
+      --name "$CONTAINER_NAME"
+      -p $HTTP_PORT_HOST:$HTTP_PORT_IN
+      "$DOCKER_HUB:$TAG"
+    - docker logs "$CONTAINER_NAME"

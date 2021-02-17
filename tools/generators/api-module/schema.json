@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "id": "api-module",
+  "type": "object",
+  "properties": {
+    "libName": {
+      "type": "string",
+      "description": "Library name",
+      "$default": {
+        "$source": "lib-name",
+        "index": 0
+      }
+    },
+    "apiName": {
+      "type": "string",
+      "description": "first API name in the library",
+      "$default": {
+        "$source": "api-name",
+        "index": 1
+      }
+    },
+    "innerPort": {
+      "type": "number",
+      "description": "API listening port inside container",
+      "default": 3000,
+      "x-prompt": {
+        "message": "Enter the container inner port ",
+        "type": "number"
+      }
+    },
+    "innerHost": {
+      "type": "string",
+      "description": "API listening host inside container",
+      "default": "0.0.0.0",
+      "x-prompt": {
+        "message": "Enter the container inner host ",
+        "type": "string"
+      }
+    },
+    "path": {
+      "type": "string",
+      "format": "path",
+      "description": "The path to create the service.",
+      "default": "apps"
+    }
+  },
+  "required": ["libName", "apiName"]
+}
